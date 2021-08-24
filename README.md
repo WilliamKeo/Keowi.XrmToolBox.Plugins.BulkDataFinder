@@ -1,4 +1,4 @@
-# XrmToolBox.Plugins.BulkDataFinder
+# Keowi.XrmToolBox.Plugins.BulkDataFinder
 This plugin allows you to perform bulk search on text fields within Microsoft Dynamics 365 or Dataverse from your external data.
 
 For more details, please check this [article](https://williamkeo293423625.wordpress.com/).

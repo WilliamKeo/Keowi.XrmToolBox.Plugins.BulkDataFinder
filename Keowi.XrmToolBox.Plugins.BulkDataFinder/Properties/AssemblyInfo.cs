@@ -4,11 +4,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("XrmToolBox.Plugins.BulkDataFinder")]
+[assembly: AssemblyTitle("Keowi.XrmToolBox.Plugins.BulkDataFinder")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("William Keo")]
-[assembly: AssemblyProduct("XrmToolBox.Plugins.BulkDataFinder")]
+[assembly: AssemblyProduct("Keowi.XrmToolBox.Plugins.BulkDataFinder")]
 [assembly: AssemblyCopyright("Copyright ©  2021")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

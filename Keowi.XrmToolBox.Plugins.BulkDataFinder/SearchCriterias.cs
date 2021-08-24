@@ -1,4 +1,4 @@
-﻿namespace XrmToolBox.Plugins.BulkDataFinder
+﻿namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
 {
     public class SearchCriterias
     {

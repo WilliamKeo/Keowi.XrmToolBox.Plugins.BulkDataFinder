@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace XrmToolBox.Plugins.BulkDataFinder.Properties {
+namespace Keowi.XrmToolBox.Plugins.BulkDataFinder.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace XrmToolBox.Plugins.BulkDataFinder.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("XrmToolBox.Plugins.BulkDataFinder.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Keowi.XrmToolBox.Plugins.BulkDataFinder.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

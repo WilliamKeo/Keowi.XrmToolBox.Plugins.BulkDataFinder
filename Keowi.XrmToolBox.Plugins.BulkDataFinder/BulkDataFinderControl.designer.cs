@@ -1,5 +1,5 @@
 ﻿
-namespace XrmToolBox.Plugins.BulkDataFinder
+namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
 {
     partial class BulkDataFinderControl
     {

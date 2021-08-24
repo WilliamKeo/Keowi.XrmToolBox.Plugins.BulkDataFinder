@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31410.357
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XrmToolBox.Plugins.BulkDataFinder", "XrmToolBox.Plugins.BulkDataFinder\XrmToolBox.Plugins.BulkDataFinder.csproj", "{3721F815-4B6B-4E18-9DDE-B719CFFD2556}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Keowi.XrmToolBox.Plugins.BulkDataFinder", "Keowi.XrmToolBox.Plugins.BulkDataFinder\Keowi.XrmToolBox.Plugins.BulkDataFinder.csproj", "{3721F815-4B6B-4E18-9DDE-B719CFFD2556}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

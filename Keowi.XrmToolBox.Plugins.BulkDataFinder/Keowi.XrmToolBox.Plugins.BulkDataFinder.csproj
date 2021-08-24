@@ -9,8 +9,8 @@
     <ProjectGuid>{3721F815-4B6B-4E18-9DDE-B719CFFD2556}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>XrmToolBox.Plugins.BulkDataFinder</RootNamespace>
-    <AssemblyName>XrmToolBox.Plugins.BulkDataFinder</AssemblyName>
+    <RootNamespace>Keowi.XrmToolBox.Plugins.BulkDataFinder</RootNamespace>
+    <AssemblyName>Keowi.XrmToolBox.Plugins.BulkDataFinder</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>

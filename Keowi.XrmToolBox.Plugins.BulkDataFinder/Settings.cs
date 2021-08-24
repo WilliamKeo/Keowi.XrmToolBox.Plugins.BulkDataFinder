@@ -1,4 +1,4 @@
-﻿namespace XrmToolBox.Plugins.BulkDataFinder
+﻿namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
 {
     /// <summary>
     /// This class can help you to store settings for your plugin

@@ -1,4 +1,5 @@
-﻿using McTools.Xrm.Connection;
+﻿using Keowi.XrmToolBox.Plugins.BulkDataFinder.AppCode;
+using McTools.Xrm.Connection;
 using Microsoft.Crm.Sdk.Messages;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
@@ -14,9 +15,8 @@ using System.Windows.Forms;
 using XrmToolBox.Extensibility;
 using XrmToolBox.Extensibility.Args;
 using XrmToolBox.Extensibility.Interfaces;
-using XrmToolBox.Plugins.BulkDataFinder.AppCode;
 
-namespace XrmToolBox.Plugins.BulkDataFinder
+namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
 {
     public partial class BulkDataFinderControl : PluginControlBase, IStatusBarMessenger, IGitHubPlugin
     {
@@ -38,7 +38,7 @@ namespace XrmToolBox.Plugins.BulkDataFinder
 
         public event EventHandler<StatusBarMessageEventArgs> SendMessageToStatusBar;
 
-        public string RepositoryName => "XrmToolBox.Plugins.BulkDataFinder";
+        public string RepositoryName => "Keowi.XrmToolBox.Plugins.BulkDataFinder";
         public string UserName => "WilliamKeo";
 
         /// <summary>

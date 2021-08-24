@@ -5,7 +5,7 @@ using Microsoft.Xrm.Sdk.Query;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace XrmToolBox.Plugins.BulkDataFinder.AppCode
+namespace Keowi.XrmToolBox.Plugins.BulkDataFinder.AppCode
 {
     public class MetadataManager
     {

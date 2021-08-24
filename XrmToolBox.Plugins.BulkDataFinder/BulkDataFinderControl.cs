@@ -18,7 +18,7 @@ using XrmToolBox.Plugins.BulkDataFinder.AppCode;
 
 namespace XrmToolBox.Plugins.BulkDataFinder
 {
-    public partial class BulkDataFinderControl : PluginControlBase, IStatusBarMessenger
+    public partial class BulkDataFinderControl : PluginControlBase, IStatusBarMessenger, IGitHubPlugin
     {
         private const int WarningLimit = 100000;
         private SearchCriterias CurrentSearchCriterias;
@@ -37,6 +37,9 @@ namespace XrmToolBox.Plugins.BulkDataFinder
         }
 
         public event EventHandler<StatusBarMessageEventArgs> SendMessageToStatusBar;
+
+        public string RepositoryName => "XrmToolBox.Plugins.BulkDataFinder";
+        public string UserName => "WilliamKeo";
 
         /// <summary>
         /// This event occurs when the connection has been updated in XrmToolBox
@@ -565,6 +568,11 @@ namespace XrmToolBox.Plugins.BulkDataFinder
         private void stopSearchToolStripButton_Click(object sender, EventArgs e)
         {
             IsStopRequested = true;
+        }
+
+        private void toolStripLabelDocumentationLink_Click(object sender, EventArgs e)
+        {
+            Process.Start("https://williamkeo293423625.wordpress.com/");
         }
 
         private void tsbClose_Click(object sender, EventArgs e)

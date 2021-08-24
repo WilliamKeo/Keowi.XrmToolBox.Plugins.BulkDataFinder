@@ -40,6 +40,7 @@ namespace XrmToolBox.Plugins.BulkDataFinder
             this.exportResultsToolStripSplitButton = new System.Windows.Forms.ToolStripSplitButton();
             this.exportOnlyMatchingDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.ignoreHeaderCheckBox = new System.Windows.Forms.CheckBox();
             this.openFileButton = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.label3 = new System.Windows.Forms.Label();
@@ -65,7 +66,8 @@ namespace XrmToolBox.Plugins.BulkDataFinder
             this.resultsDetailsGroupBox = new System.Windows.Forms.GroupBox();
             this.matchingResultsRadioButton = new System.Windows.Forms.RadioButton();
             this.allResultsRadioButton = new System.Windows.Forms.RadioButton();
-            this.ignoreHeaderCheckBox = new System.Windows.Forms.CheckBox();
+            this.toolStripLabelDocumentationLink = new System.Windows.Forms.ToolStripLabel();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripMenu.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -83,7 +85,9 @@ namespace XrmToolBox.Plugins.BulkDataFinder
             this.toolStripSeparator1,
             this.stopSearchToolStripButton,
             this.toolStripSeparator2,
-            this.exportResultsToolStripSplitButton});
+            this.exportResultsToolStripSplitButton,
+            this.toolStripSeparator3,
+            this.toolStripLabelDocumentationLink});
             this.toolStripMenu.Location = new System.Drawing.Point(0, 0);
             this.toolStripMenu.Name = "toolStripMenu";
             this.toolStripMenu.Size = new System.Drawing.Size(1216, 25);
@@ -170,6 +174,17 @@ namespace XrmToolBox.Plugins.BulkDataFinder
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Input Data";
             this.groupBox1.Enter += new System.EventHandler(this.groupBox1_Enter);
+            // 
+            // ignoreHeaderCheckBox
+            // 
+            this.ignoreHeaderCheckBox.AutoSize = true;
+            this.ignoreHeaderCheckBox.Location = new System.Drawing.Point(20, 56);
+            this.ignoreHeaderCheckBox.Name = "ignoreHeaderCheckBox";
+            this.ignoreHeaderCheckBox.Size = new System.Drawing.Size(108, 17);
+            this.ignoreHeaderCheckBox.TabIndex = 1;
+            this.ignoreHeaderCheckBox.Text = "Ignore file header";
+            this.ignoreHeaderCheckBox.UseVisualStyleBackColor = true;
+            this.ignoreHeaderCheckBox.CheckedChanged += new System.EventHandler(this.ignoreHeaderCheckBox_CheckedChanged);
             // 
             // openFileButton
             // 
@@ -431,16 +446,21 @@ namespace XrmToolBox.Plugins.BulkDataFinder
             this.allResultsRadioButton.UseVisualStyleBackColor = true;
             this.allResultsRadioButton.CheckedChanged += new System.EventHandler(this.allResultsRadioButton_CheckedChanged);
             // 
-            // ignoreHeaderCheckBox
+            // toolStripLabelDocumentationLink
             // 
-            this.ignoreHeaderCheckBox.AutoSize = true;
-            this.ignoreHeaderCheckBox.Location = new System.Drawing.Point(20, 56);
-            this.ignoreHeaderCheckBox.Name = "ignoreHeaderCheckBox";
-            this.ignoreHeaderCheckBox.Size = new System.Drawing.Size(108, 17);
-            this.ignoreHeaderCheckBox.TabIndex = 1;
-            this.ignoreHeaderCheckBox.Text = "Ignore file header";
-            this.ignoreHeaderCheckBox.UseVisualStyleBackColor = true;
-            this.ignoreHeaderCheckBox.CheckedChanged += new System.EventHandler(this.ignoreHeaderCheckBox_CheckedChanged);
+            this.toolStripLabelDocumentationLink.Image = ((System.Drawing.Image)(resources.GetObject("toolStripLabelDocumentationLink.Image")));
+            this.toolStripLabelDocumentationLink.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.toolStripLabelDocumentationLink.IsLink = true;
+            this.toolStripLabelDocumentationLink.LinkColor = System.Drawing.Color.Teal;
+            this.toolStripLabelDocumentationLink.Name = "toolStripLabelDocumentationLink";
+            this.toolStripLabelDocumentationLink.Size = new System.Drawing.Size(106, 22);
+            this.toolStripLabelDocumentationLink.Text = "Documentation";
+            this.toolStripLabelDocumentationLink.Click += new System.EventHandler(this.toolStripLabelDocumentationLink_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
             // 
             // BulkDataFinderControl
             // 
@@ -508,5 +528,7 @@ namespace XrmToolBox.Plugins.BulkDataFinder
         private System.Windows.Forms.CheckBox useFilteredViewCheckBox;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.CheckBox ignoreHeaderCheckBox;
+        private System.Windows.Forms.ToolStripLabel toolStripLabelDocumentationLink;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
     }
 }

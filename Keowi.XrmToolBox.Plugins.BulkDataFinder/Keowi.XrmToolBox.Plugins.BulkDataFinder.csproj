@@ -251,6 +251,7 @@
     <Content Include="Resources\green-play-icon16.png" />
     <Content Include="Resources\icon_close16.png" />
     <Content Include="Resources\ImportToExcel.png" />
+    <Content Include="Resources\information16.png" />
     <Content Include="Resources\open-file16.png" />
     <Content Include="Resources\stop-icon16.png" />
   </ItemGroup>

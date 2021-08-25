@@ -215,7 +215,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppCode\ComboBoxItem.cs" />
     <Compile Include="AppCode\MetadataManager.cs" />
+    <Compile Include="AppCode\ScintillaControl.cs" />
     <Compile Include="BulkDataFinderPlugin.cs" />
     <Compile Include="BulkDataFinderControl.cs">
       <SubType>UserControl</SubType>

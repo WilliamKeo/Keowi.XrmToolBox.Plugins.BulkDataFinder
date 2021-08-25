@@ -67,6 +67,20 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             searchButton.Enabled = true;
         }
 
+        private void EnableControls(bool enable)
+        {
+            stopSearchToolStripButton.Enabled = !enable;
+            openFileButton.Enabled = enable;
+            ignoreHeaderCheckBox.Enabled = enable;
+            entitiesComboBox.Enabled = enable;
+            viewsComboBox.Enabled = enable;
+            useFilteredViewCheckBox.Enabled = enable;
+            attributesComboBox.Enabled = enable;
+            searchButton.Enabled = enable;
+            tsbLoadMetadata.Enabled = enable;
+            resultsDetailsGroupBox.Enabled = enable;
+        }
+
         private void entitiesComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             CurrentSearchCriterias.Entity = (string)entitiesComboBox.SelectedItem;
@@ -241,24 +255,24 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
                     var result = args.Result as Tuple<EntityCollection, EntityCollection>;
                     if (result != null)
                     {
-                        var views = result.Item1.Entities.OrderBy(x => x.GetAttributeValue<string>("name")).Select(x => new
+                        var views = result.Item1.Entities.OrderBy(x => x.GetAttributeValue<string>("name")).Select(x => new ComboBoxItem
                         {
-                            Text = x.GetAttributeValue<string>("name"),
+                            Key = x.GetAttributeValue<string>("name"),
                             Value = x.GetAttributeValue<string>("fetchxml")
                         }).ToList();
-                        views.Insert(0, new { Text = "----- SYSTEM VIEWS -----", Value = "" });
+                        views.Insert(0, new ComboBoxItem { Key = "----- SYSTEM VIEWS -----", Value = "" });
 
                         if (result.Item2 != null && result.Item2.Entities.Any())
                         {
-                            views.Add(new { Text = "----- PERSONAL VIEWS -----", Value = "" });
-                            views.AddRange(result.Item2.Entities.OrderBy(x => x.GetAttributeValue<string>("name")).Select(x => new
+                            views.Add(new ComboBoxItem { Key = "----- PERSONAL VIEWS -----", Value = "" });
+                            views.AddRange(result.Item2.Entities.OrderBy(x => x.GetAttributeValue<string>("name")).Select(x => new ComboBoxItem
                             {
-                                Text = x.GetAttributeValue<string>("name"),
+                                Key = x.GetAttributeValue<string>("name"),
                                 Value = x.GetAttributeValue<string>("fetchxml")
                             }).ToList());
                         }
                         viewsComboBox.DataSource = views.ToArray();
-                        viewsComboBox.DisplayMember = "Text";
+                        viewsComboBox.DisplayMember = "Key";
                         viewsComboBox.ValueMember = "Value";
                     }
                 }
@@ -273,20 +287,6 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
         {
             var curSearchingDataList = searchingDataList.Skip(ignoreHeaderCheckBox.Checked ? 1 : 0).ToList();
             rowNumberValue.Text = $"{curSearchingDataList.Count}";
-        }
-
-        private void ManageComponentsAccessibility(bool enable)
-        {
-            stopSearchToolStripButton.Enabled = !enable;
-            openFileButton.Enabled = enable;
-            ignoreHeaderCheckBox.Enabled = enable;
-            entitiesComboBox.Enabled = enable;
-            viewsComboBox.Enabled = enable;
-            useFilteredViewCheckBox.Enabled = enable;
-            attributesComboBox.Enabled = enable;
-            searchButton.Enabled = enable;
-            tsbLoadMetadata.Enabled = enable;
-            resultsDetailsGroupBox.Enabled = enable;
         }
 
         private void matchingResultsRadioButton_CheckedChanged(object sender, EventArgs e)
@@ -319,6 +319,8 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
                 UseFilteredView = true
             };
             ExecuteMethod(GetEntitiesMetadata);
+
+            ScintillaControl.InitXML(scintillaFetchXml, true);
         }
 
         /// <summary>
@@ -454,7 +456,7 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             searchResultsListView.Items.Clear();
 
             IsStopRequested = false;
-            ManageComponentsAccessibility(false);
+            EnableControls(false);
 
             WorkAsync(new WorkAsyncInfo
             {
@@ -540,7 +542,7 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
                     HasSearchResults = true;
                     exportResultsToolStripSplitButton.Enabled = true;
                     exportOnlyMatchingDataToolStripMenuItem.Enabled = true;
-                    ManageComponentsAccessibility(true);
+                    EnableControls(true);
 
                     var curSearchingDataList = searchingDataList.Skip(ignoreHeaderCheckBox.Checked ? 1 : 0).ToList();
                     if (curSearchingDataList.All(x => x.IsProcessed))
@@ -602,6 +604,15 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
 
         private void viewsComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (viewsComboBox.SelectedItem != null)
+            {
+                scintillaFetchXml.Text = ((ComboBoxItem)viewsComboBox.SelectedItem).Value;
+            }
+            else
+            {
+                scintillaFetchXml.Text = "";
+            }
+            ScintillaControl.Format(scintillaFetchXml);
         }
     }
 }

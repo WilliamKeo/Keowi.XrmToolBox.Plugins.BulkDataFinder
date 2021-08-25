@@ -39,6 +39,8 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.exportResultsToolStripSplitButton = new System.Windows.Forms.ToolStripSplitButton();
             this.exportOnlyMatchingDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripLabelDocumentationLink = new System.Windows.Forms.ToolStripLabel();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.ignoreHeaderCheckBox = new System.Windows.Forms.CheckBox();
             this.openFileButton = new System.Windows.Forms.Button();
@@ -66,13 +68,14 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             this.resultsDetailsGroupBox = new System.Windows.Forms.GroupBox();
             this.matchingResultsRadioButton = new System.Windows.Forms.RadioButton();
             this.allResultsRadioButton = new System.Windows.Forms.RadioButton();
-            this.toolStripLabelDocumentationLink = new System.Windows.Forms.ToolStripLabel();
-            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.scintillaFetchXml = new ScintillaNET.Scintilla();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.toolStripMenu.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.resultsDetailsGroupBox.SuspendLayout();
+            this.groupBox4.SuspendLayout();
             this.SuspendLayout();
             // 
             // toolStripMenu
@@ -90,7 +93,7 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             this.toolStripLabelDocumentationLink});
             this.toolStripMenu.Location = new System.Drawing.Point(0, 0);
             this.toolStripMenu.Name = "toolStripMenu";
-            this.toolStripMenu.Size = new System.Drawing.Size(1216, 25);
+            this.toolStripMenu.Size = new System.Drawing.Size(1356, 25);
             this.toolStripMenu.TabIndex = 4;
             this.toolStripMenu.Text = "toolStrip1";
             // 
@@ -163,13 +166,29 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             this.exportOnlyMatchingDataToolStripMenuItem.Text = "Export Only Matching Data";
             this.exportOnlyMatchingDataToolStripMenuItem.Click += new System.EventHandler(this.exportOnlyMatchingDataToolStripMenuItem_Click);
             // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
+            // 
+            // toolStripLabelDocumentationLink
+            // 
+            this.toolStripLabelDocumentationLink.Image = ((System.Drawing.Image)(resources.GetObject("toolStripLabelDocumentationLink.Image")));
+            this.toolStripLabelDocumentationLink.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.toolStripLabelDocumentationLink.IsLink = true;
+            this.toolStripLabelDocumentationLink.LinkColor = System.Drawing.Color.Teal;
+            this.toolStripLabelDocumentationLink.Name = "toolStripLabelDocumentationLink";
+            this.toolStripLabelDocumentationLink.Size = new System.Drawing.Size(106, 22);
+            this.toolStripLabelDocumentationLink.Text = "Documentation";
+            this.toolStripLabelDocumentationLink.Click += new System.EventHandler(this.toolStripLabelDocumentationLink_Click);
+            // 
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.ignoreHeaderCheckBox);
             this.groupBox1.Controls.Add(this.openFileButton);
             this.groupBox1.Location = new System.Drawing.Point(3, 28);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(656, 100);
+            this.groupBox1.Size = new System.Drawing.Size(715, 100);
             this.groupBox1.TabIndex = 6;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Input Data";
@@ -211,7 +230,7 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             this.groupBox2.Controls.Add(this.entitiesComboBox);
             this.groupBox2.Location = new System.Drawing.Point(3, 134);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(656, 126);
+            this.groupBox2.Size = new System.Drawing.Size(715, 126);
             this.groupBox2.TabIndex = 7;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Search Settings";
@@ -250,7 +269,7 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             // searchButton
             // 
             this.searchButton.Enabled = false;
-            this.searchButton.Location = new System.Drawing.Point(500, 97);
+            this.searchButton.Location = new System.Drawing.Point(559, 97);
             this.searchButton.Name = "searchButton";
             this.searchButton.Size = new System.Drawing.Size(150, 23);
             this.searchButton.TabIndex = 4;
@@ -296,6 +315,8 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             // 
             // groupBox3
             // 
+            this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox3.Controls.Add(this.rowNumberSearchedValue);
             this.groupBox3.Controls.Add(this.rowNumberSearchedLabel);
             this.groupBox3.Controls.Add(this.durationValue);
@@ -304,9 +325,9 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             this.groupBox3.Controls.Add(this.durationLabel);
             this.groupBox3.Controls.Add(this.recordsFoundLabel);
             this.groupBox3.Controls.Add(this.rowNumberLabel);
-            this.groupBox3.Location = new System.Drawing.Point(3, 266);
+            this.groupBox3.Location = new System.Drawing.Point(724, 28);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(656, 129);
+            this.groupBox3.Size = new System.Drawing.Size(597, 129);
             this.groupBox3.TabIndex = 8;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Analysis Results";
@@ -392,7 +413,7 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             this.searchResultsListView.Location = new System.Drawing.Point(6, 56);
             this.searchResultsListView.MultiSelect = false;
             this.searchResultsListView.Name = "searchResultsListView";
-            this.searchResultsListView.Size = new System.Drawing.Size(512, 305);
+            this.searchResultsListView.Size = new System.Drawing.Size(512, 469);
             this.searchResultsListView.TabIndex = 9;
             this.searchResultsListView.UseCompatibleStateImageBehavior = false;
             this.searchResultsListView.View = System.Windows.Forms.View.Details;
@@ -415,9 +436,9 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             this.resultsDetailsGroupBox.Controls.Add(this.allResultsRadioButton);
             this.resultsDetailsGroupBox.Controls.Add(this.searchResultsListView);
             this.resultsDetailsGroupBox.Enabled = false;
-            this.resultsDetailsGroupBox.Location = new System.Drawing.Point(665, 28);
+            this.resultsDetailsGroupBox.Location = new System.Drawing.Point(724, 163);
             this.resultsDetailsGroupBox.Name = "resultsDetailsGroupBox";
-            this.resultsDetailsGroupBox.Size = new System.Drawing.Size(548, 367);
+            this.resultsDetailsGroupBox.Size = new System.Drawing.Size(629, 531);
             this.resultsDetailsGroupBox.TabIndex = 10;
             this.resultsDetailsGroupBox.TabStop = false;
             this.resultsDetailsGroupBox.Text = "Results Details";
@@ -446,26 +467,28 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             this.allResultsRadioButton.UseVisualStyleBackColor = true;
             this.allResultsRadioButton.CheckedChanged += new System.EventHandler(this.allResultsRadioButton_CheckedChanged);
             // 
-            // toolStripLabelDocumentationLink
+            // scintillaFetchXml
             // 
-            this.toolStripLabelDocumentationLink.Image = ((System.Drawing.Image)(resources.GetObject("toolStripLabelDocumentationLink.Image")));
-            this.toolStripLabelDocumentationLink.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.toolStripLabelDocumentationLink.IsLink = true;
-            this.toolStripLabelDocumentationLink.LinkColor = System.Drawing.Color.Teal;
-            this.toolStripLabelDocumentationLink.Name = "toolStripLabelDocumentationLink";
-            this.toolStripLabelDocumentationLink.Size = new System.Drawing.Size(106, 22);
-            this.toolStripLabelDocumentationLink.Text = "Documentation";
-            this.toolStripLabelDocumentationLink.Click += new System.EventHandler(this.toolStripLabelDocumentationLink_Click);
+            this.scintillaFetchXml.Location = new System.Drawing.Point(6, 19);
+            this.scintillaFetchXml.Name = "scintillaFetchXml";
+            this.scintillaFetchXml.Size = new System.Drawing.Size(702, 402);
+            this.scintillaFetchXml.TabIndex = 11;
             // 
-            // toolStripSeparator3
+            // groupBox4
             // 
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
+            this.groupBox4.Controls.Add(this.scintillaFetchXml);
+            this.groupBox4.Location = new System.Drawing.Point(4, 267);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(714, 427);
+            this.groupBox4.TabIndex = 12;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "FetchXml Viewer (Consultation purpose)";
             // 
             // BulkDataFinderControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.resultsDetailsGroupBox);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
@@ -473,7 +496,7 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             this.Controls.Add(this.toolStripMenu);
             this.Name = "BulkDataFinderControl";
             this.PluginIcon = ((System.Drawing.Icon)(resources.GetObject("$this.PluginIcon")));
-            this.Size = new System.Drawing.Size(1216, 540);
+            this.Size = new System.Drawing.Size(1356, 785);
             this.TabIcon = ((System.Drawing.Image)(resources.GetObject("$this.TabIcon")));
             this.Load += new System.EventHandler(this.MyPluginControl_Load);
             this.toolStripMenu.ResumeLayout(false);
@@ -486,6 +509,7 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             this.groupBox3.PerformLayout();
             this.resultsDetailsGroupBox.ResumeLayout(false);
             this.resultsDetailsGroupBox.PerformLayout();
+            this.groupBox4.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -530,5 +554,7 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
         private System.Windows.Forms.CheckBox ignoreHeaderCheckBox;
         private System.Windows.Forms.ToolStripLabel toolStripLabelDocumentationLink;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private ScintillaNET.Scintilla scintillaFetchXml;
+        private System.Windows.Forms.GroupBox groupBox4;
     }
 }

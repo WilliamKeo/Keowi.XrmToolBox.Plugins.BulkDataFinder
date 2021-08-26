@@ -574,7 +574,7 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
 
         private void toolStripLabelDocumentationLink_Click(object sender, EventArgs e)
         {
-            Process.Start("https://williamkeo293423625.wordpress.com/");
+            Process.Start("https://williamkeo293423625.wordpress.com/2021/08/25/xrmtoolbox-new-plugin-bulk-data-finder/");
         }
 
         private void tsbClose_Click(object sender, EventArgs e)

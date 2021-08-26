@@ -184,9 +184,11 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             // 
             // groupBox1
             // 
+            this.groupBox1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.groupBox1.Controls.Add(this.ignoreHeaderCheckBox);
             this.groupBox1.Controls.Add(this.openFileButton);
             this.groupBox1.Location = new System.Drawing.Point(3, 28);
+            this.groupBox1.MinimumSize = new System.Drawing.Size(550, 0);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(715, 100);
             this.groupBox1.TabIndex = 6;
@@ -220,6 +222,7 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             // 
             // groupBox2
             // 
+            this.groupBox2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.groupBox2.Controls.Add(this.label3);
             this.groupBox2.Controls.Add(this.useFilteredViewCheckBox);
             this.groupBox2.Controls.Add(this.viewsComboBox);
@@ -229,6 +232,7 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             this.groupBox2.Controls.Add(this.label1);
             this.groupBox2.Controls.Add(this.entitiesComboBox);
             this.groupBox2.Location = new System.Drawing.Point(3, 134);
+            this.groupBox2.MinimumSize = new System.Drawing.Size(550, 0);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(715, 126);
             this.groupBox2.TabIndex = 7;
@@ -317,6 +321,7 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             // 
             this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox3.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.groupBox3.Controls.Add(this.rowNumberSearchedValue);
             this.groupBox3.Controls.Add(this.rowNumberSearchedLabel);
             this.groupBox3.Controls.Add(this.durationValue);
@@ -326,6 +331,7 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             this.groupBox3.Controls.Add(this.recordsFoundLabel);
             this.groupBox3.Controls.Add(this.rowNumberLabel);
             this.groupBox3.Location = new System.Drawing.Point(724, 28);
+            this.groupBox3.MinimumSize = new System.Drawing.Size(450, 0);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(597, 129);
             this.groupBox3.TabIndex = 8;
@@ -432,11 +438,13 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             // 
             this.resultsDetailsGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.resultsDetailsGroupBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.resultsDetailsGroupBox.Controls.Add(this.matchingResultsRadioButton);
             this.resultsDetailsGroupBox.Controls.Add(this.allResultsRadioButton);
             this.resultsDetailsGroupBox.Controls.Add(this.searchResultsListView);
             this.resultsDetailsGroupBox.Enabled = false;
             this.resultsDetailsGroupBox.Location = new System.Drawing.Point(724, 163);
+            this.resultsDetailsGroupBox.MinimumSize = new System.Drawing.Size(450, 0);
             this.resultsDetailsGroupBox.Name = "resultsDetailsGroupBox";
             this.resultsDetailsGroupBox.Size = new System.Drawing.Size(629, 531);
             this.resultsDetailsGroupBox.TabIndex = 10;
@@ -476,8 +484,10 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             // 
             // groupBox4
             // 
+            this.groupBox4.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.groupBox4.Controls.Add(this.scintillaFetchXml);
             this.groupBox4.Location = new System.Drawing.Point(4, 267);
+            this.groupBox4.MinimumSize = new System.Drawing.Size(550, 0);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(714, 427);
             this.groupBox4.TabIndex = 12;

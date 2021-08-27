@@ -273,6 +273,7 @@ copy /Y $(TargetFileName) Plugins
     <MakeDir Directories="$(OutputPath)Merged" />
     <ItemGroup>
       <MergeAssemblies Include="$(OutputPath)\EPPlus.dll" />
+	  <MergeAssemblies Include="$(OutputPath)\Microsoft.IO.RecyclableMemoryStream.dll" />
     </ItemGroup>
     <ItemGroup>
       <ILRepackPackage Include="..\packages\ilrepack.*\tools\ilrepack.exe" />

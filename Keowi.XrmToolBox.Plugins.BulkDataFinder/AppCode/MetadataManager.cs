@@ -2,6 +2,7 @@
 using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Metadata;
 using Microsoft.Xrm.Sdk.Query;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -30,7 +31,7 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder.AppCode
             return filteredEntities;
         }
 
-        public List<string> GetEntityTextAttributes(string entityLogicalName)
+        public Tuple<string, List<string>> GetEntityPrimaryAndTextAttributes(string entityLogicalName)
         {
             var request = new RetrieveEntityRequest
             {
@@ -47,7 +48,9 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder.AppCode
             filteredAttributes = filteredAttributes.Where(a =>
                 a.AttributeType == AttributeTypeCode.String || a.AttributeType == AttributeTypeCode.Memo);
 
-            return filteredAttributes.Select(x => x.LogicalName).OrderBy(x => x).ToList();
+            return new Tuple<string, List<string>>(
+                result.EntityMetadata.PrimaryNameAttribute,
+                filteredAttributes.Select(x => x.LogicalName).OrderBy(x => x).ToList());
         }
 
         public EntityCollection GetSavedQueries(int entityCode)

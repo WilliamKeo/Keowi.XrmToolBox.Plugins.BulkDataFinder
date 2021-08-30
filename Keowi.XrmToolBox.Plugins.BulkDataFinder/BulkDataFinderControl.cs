@@ -30,6 +30,7 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
         private MetadataManager metadataManager = null;
         private Settings mySettings;
         private List<Search> searchingDataList;
+        private SearchResultsOptions SearchResultsOptions;
 
         public BulkDataFinderControl()
         {
@@ -76,9 +77,13 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             viewsComboBox.Enabled = enable;
             useFilteredViewCheckBox.Enabled = enable;
             attributesComboBox.Enabled = enable;
+            recordIdRadioButton.Enabled = enable;
+            recordIdAndPrimaryRadioButton.Enabled = enable;
             searchButton.Enabled = enable;
             tsbLoadMetadata.Enabled = enable;
             resultsDetailsGroupBox.Enabled = enable;
+            exportResultsToolStripSplitButton.Enabled = enable;
+            exportOnlyMatchingDataToolStripMenuItem.Enabled = enable;
         }
 
         private void entitiesComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -100,13 +105,16 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
                 {
                     var criterias = (SearchCriterias)args.Argument;
 
-                    args.Result = metadataManager.GetEntityTextAttributes(criterias.Entity);
+                    args.Result = metadataManager.GetEntityPrimaryAndTextAttributes(criterias.Entity);
                 },
                 PostWorkCallBack = (args) =>
                 {
-                    var result = args.Result as List<string>;
-                    attributesComboBox.Items.AddRange(result.ToArray());
-                    CurrentValidAttributes = new List<string>(result);
+                    var result = args.Result as Tuple<string, List<string>>;
+                    var attrResult = result.Item2;
+                    attributesComboBox.Items.AddRange(attrResult.ToArray());
+                    CurrentValidAttributes = new List<string>(attrResult);
+
+                    CurrentSearchCriterias.PrimaryAttribute = result.Item1;
                 }
             });
         }
@@ -121,15 +129,15 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             WorkAsync(new WorkAsyncInfo
             {
                 Message = "Exporting search results...",
-                AsyncArgument = CurrentSearchCriterias,
+                AsyncArgument = SearchResultsOptions,
                 Work = (worker, args) =>
                 {
-                    var criterias = (SearchCriterias)args.Argument;
+                    var criterias = (SearchResultsOptions)args.Argument;
 
                     ExcelPackage excelPkg = new ExcelPackage();
                     ExcelWorksheet worksheet = excelPkg.Workbook.Worksheets.Add("Search Results");
 
-                    worksheet.Cells[1, 1].Value = criterias.Attribute;
+                    worksheet.Cells[1, 1].Value = $"{criterias.Attribute} ({criterias.Entity})";
                     worksheet.Cells[1, 1].Style.Font.Bold = true;
                     worksheet.Cells[1, 2].Value = "Processed";
                     worksheet.Cells[1, 2].Style.Font.Bold = true;
@@ -137,6 +145,11 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
                     worksheet.Cells[1, 3].Style.Font.Bold = true;
                     worksheet.Cells[1, 4].Value = "Record Id";
                     worksheet.Cells[1, 4].Style.Font.Bold = true;
+                    if (criterias.DisplayPrimaryAttribute)
+                    {
+                        worksheet.Cells[1, 5].Value = $"Primary attribute ({criterias.PrimaryAttribute})";
+                        worksheet.Cells[1, 5].Style.Font.Bold = true;
+                    }
 
                     var lineIndex = 2;
 
@@ -155,6 +168,10 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
                         if (searchItemResult.IsFound)
                         {
                             worksheet.Cells[lineIndex, 4].Value = searchItemResult.RecordId;
+                        }
+                        if (criterias.DisplayPrimaryAttribute)
+                        {
+                            worksheet.Cells[lineIndex, 5].Value = searchItemResult.PrimaryAttribute;
                         }
 
                         lineIndex++;
@@ -408,7 +425,8 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             {
                 var listItem = new ListViewItem(new[] {
                             searchItemResult.InputData,
-                            searchItemResult.RecordId != Guid.Empty ? searchItemResult.RecordId.ToString() : string.Empty
+                            searchItemResult.RecordId != Guid.Empty ? searchItemResult.RecordId.ToString() : string.Empty,
+                            searchItemResult.PrimaryAttribute
                         });
                 if (isFullResults && searchItemResult.IsFound)
                     listItem.ForeColor = Color.Green;
@@ -440,6 +458,7 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
                 return;
             }
             CurrentSearchCriterias.IgnoreHeader = ignoreHeaderCheckBox.Checked;
+            CurrentSearchCriterias.DisplayPrimaryAttribute = recordIdAndPrimaryRadioButton.Checked;
             if (HasSearchResults
                 && MessageBox.Show("Starting a new search will delete previous results. Do you want to continue?",
                     "Reset Results", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.Cancel)
@@ -452,7 +471,13 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             rowNumberSearchedValue.Text = string.Empty;
             recordsFoundValue.Text = string.Empty;
             durationValue.Text = string.Empty;
-            searchingDataList.ForEach(x => { x.IsProcessed = false; x.IsFound = false; x.RecordId = Guid.Empty; });
+            searchingDataList.ForEach(x =>
+            {
+                x.IsProcessed = false;
+                x.IsFound = false;
+                x.RecordId = Guid.Empty;
+                x.PrimaryAttribute = string.Empty;
+            });
             searchResultsListView.Items.Clear();
 
             IsStopRequested = false;
@@ -488,11 +513,18 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
                                 FetchXml = criterias.FetchXml
                             };
                             var conversionResponse =
-                            (FetchXmlToQueryExpressionResponse)Service.Execute(conversionRequest);
+                                (FetchXmlToQueryExpressionResponse)Service.Execute(conversionRequest);
 
                             query = conversionResponse.Query;
+                            query.NoLock = true;
 
-                            query.ColumnSet = new ColumnSet(); // Remove columns for performance.
+                            // Remove columns for performance.
+                            query.ColumnSet = new ColumnSet();
+                            foreach (var linkEntity in query.LinkEntities)
+                            {
+                                linkEntity.Columns = new ColumnSet();
+                            }
+
                             query.Criteria.AddCondition(
                                 new ConditionExpression(criterias.Attribute, ConditionOperator.Equal, searchItem.InputData));
                         }
@@ -510,11 +542,21 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
                                 }
                             };
                         }
+
+                        if (criterias.DisplayPrimaryAttribute)
+                        {
+                            query.ColumnSet = new ColumnSet(criterias.PrimaryAttribute);
+                        }
+
                         var result = Service.RetrieveMultiple(query).Entities;
                         if (result.Any())
                         {
                             searchItem.IsFound = true;
                             searchItem.RecordId = result.First().Id;
+                            if (criterias.DisplayPrimaryAttribute)
+                            {
+                                searchItem.PrimaryAttribute = result.First().GetAttributeValue<string>(criterias.PrimaryAttribute);
+                            }
                         }
                         searchItem.IsProcessed = true;
 
@@ -540,8 +582,6 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
                     var duration = (TimeSpan)args.Result;
 
                     HasSearchResults = true;
-                    exportResultsToolStripSplitButton.Enabled = true;
-                    exportOnlyMatchingDataToolStripMenuItem.Enabled = true;
                     EnableControls(true);
 
                     var curSearchingDataList = searchingDataList.Skip(ignoreHeaderCheckBox.Checked ? 1 : 0).ToList();
@@ -563,6 +603,14 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
                     SendMessageToStatusBar?.Invoke(this, new StatusBarMessageEventArgs(100, string.Empty));
 
                     RenderResultsDetailsView(true);
+
+                    SearchResultsOptions = new SearchResultsOptions
+                    {
+                        Attribute = CurrentSearchCriterias.Attribute,
+                        DisplayPrimaryAttribute = CurrentSearchCriterias.DisplayPrimaryAttribute,
+                        Entity = CurrentSearchCriterias.Entity,
+                        PrimaryAttribute = CurrentSearchCriterias.PrimaryAttribute
+                    };
                 }
             });
         }

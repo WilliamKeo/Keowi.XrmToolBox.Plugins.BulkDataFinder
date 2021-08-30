@@ -10,7 +10,9 @@ Single column Excel file is required at the moment. Each row will contains the t
 Choose the entity, a filtered view and the attribute on which the search will be looking at.
 The view selection enables data filtering based on the systems views available on the entity but also personal user views defined on the logged account.
 If you are attempting a search on the whole entity uncheck the "Use Filtered Views" options. Keep in mind that performance can be affected by searching into a large table.
-#### 3. Run the search
+#### 3. Choose your results options
+Decide whether you want the primary attribute value of the entity or not. It might be useful for those need more information than the record Id.
+#### 4. Run the search
 Once the previous steps configured, you can now run the search by hitting the button. You can interupt the search at any time when necessary using the "Stop Search" command.
-#### 4. Export the results
+#### 5. Export the results
 When the search is completed, you can look into the results on the screen but also exported the detailled analysis Excel file for further purposes. Multiple export options are proposed according to your needs.

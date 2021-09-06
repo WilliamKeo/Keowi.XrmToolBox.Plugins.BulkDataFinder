@@ -48,11 +48,11 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             this.label3 = new System.Windows.Forms.Label();
             this.useFilteredViewCheckBox = new System.Windows.Forms.CheckBox();
             this.viewsComboBox = new System.Windows.Forms.ComboBox();
-            this.searchButton = new System.Windows.Forms.Button();
             this.attributesComboBox = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.entitiesComboBox = new System.Windows.Forms.ComboBox();
+            this.searchButton = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.rowNumberSearchedValue = new System.Windows.Forms.Label();
             this.rowNumberSearchedLabel = new System.Windows.Forms.Label();
@@ -65,15 +65,15 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             this.searchResultsListView = new System.Windows.Forms.ListView();
             this.searchInput = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.recordId = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.primaryAttribute = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.resultsDetailsGroupBox = new System.Windows.Forms.GroupBox();
             this.matchingResultsRadioButton = new System.Windows.Forms.RadioButton();
             this.allResultsRadioButton = new System.Windows.Forms.RadioButton();
             this.scintillaFetchXml = new ScintillaNET.Scintilla();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.recordIdRadioButton = new System.Windows.Forms.RadioButton();
             this.recordIdAndPrimaryRadioButton = new System.Windows.Forms.RadioButton();
-            this.primaryAttribute = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.recordIdRadioButton = new System.Windows.Forms.RadioButton();
             this.toolStripMenu.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -274,17 +274,6 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             this.viewsComboBox.TabIndex = 5;
             this.viewsComboBox.SelectedIndexChanged += new System.EventHandler(this.viewsComboBox_SelectedIndexChanged);
             // 
-            // searchButton
-            // 
-            this.searchButton.Enabled = false;
-            this.searchButton.Location = new System.Drawing.Point(558, 36);
-            this.searchButton.Name = "searchButton";
-            this.searchButton.Size = new System.Drawing.Size(150, 23);
-            this.searchButton.TabIndex = 4;
-            this.searchButton.Text = "Start Search";
-            this.searchButton.UseVisualStyleBackColor = true;
-            this.searchButton.Click += new System.EventHandler(this.searchButton_Click);
-            // 
             // attributesComboBox
             // 
             this.attributesComboBox.FormattingEnabled = true;
@@ -320,6 +309,17 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             this.entitiesComboBox.Size = new System.Drawing.Size(200, 21);
             this.entitiesComboBox.TabIndex = 0;
             this.entitiesComboBox.SelectedIndexChanged += new System.EventHandler(this.entitiesComboBox_SelectedIndexChanged);
+            // 
+            // searchButton
+            // 
+            this.searchButton.Enabled = false;
+            this.searchButton.Location = new System.Drawing.Point(558, 36);
+            this.searchButton.Name = "searchButton";
+            this.searchButton.Size = new System.Drawing.Size(150, 23);
+            this.searchButton.TabIndex = 4;
+            this.searchButton.Text = "Start Search";
+            this.searchButton.UseVisualStyleBackColor = true;
+            this.searchButton.Click += new System.EventHandler(this.searchButton_Click);
             // 
             // groupBox3
             // 
@@ -420,6 +420,7 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             this.searchInput,
             this.recordId,
             this.primaryAttribute});
+            this.searchResultsListView.FullRowSelect = true;
             this.searchResultsListView.GridLines = true;
             this.searchResultsListView.Location = new System.Drawing.Point(6, 56);
             this.searchResultsListView.MultiSelect = false;
@@ -428,6 +429,7 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             this.searchResultsListView.TabIndex = 9;
             this.searchResultsListView.UseCompatibleStateImageBehavior = false;
             this.searchResultsListView.View = System.Windows.Forms.View.Details;
+            this.searchResultsListView.KeyUp += new System.Windows.Forms.KeyEventHandler(this.searchResultsListView_KeyUp);
             // 
             // searchInput
             // 
@@ -438,6 +440,11 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             // 
             this.recordId.Text = "Record Id";
             this.recordId.Width = 220;
+            // 
+            // primaryAttribute
+            // 
+            this.primaryAttribute.Text = "Primary Attribute";
+            this.primaryAttribute.Width = 160;
             // 
             // resultsDetailsGroupBox
             // 
@@ -511,6 +518,16 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Results Options";
             // 
+            // recordIdAndPrimaryRadioButton
+            // 
+            this.recordIdAndPrimaryRadioButton.AutoSize = true;
+            this.recordIdAndPrimaryRadioButton.Location = new System.Drawing.Point(108, 19);
+            this.recordIdAndPrimaryRadioButton.Name = "recordIdAndPrimaryRadioButton";
+            this.recordIdAndPrimaryRadioButton.Size = new System.Drawing.Size(171, 17);
+            this.recordIdAndPrimaryRadioButton.TabIndex = 1;
+            this.recordIdAndPrimaryRadioButton.Text = "Record Id and Primary attribute";
+            this.recordIdAndPrimaryRadioButton.UseVisualStyleBackColor = true;
+            // 
             // recordIdRadioButton
             // 
             this.recordIdRadioButton.AutoSize = true;
@@ -522,21 +539,6 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             this.recordIdRadioButton.TabStop = true;
             this.recordIdRadioButton.Text = "Record Id only";
             this.recordIdRadioButton.UseVisualStyleBackColor = true;
-            // 
-            // recordIdAndPrimaryRadioButton
-            // 
-            this.recordIdAndPrimaryRadioButton.AutoSize = true;
-            this.recordIdAndPrimaryRadioButton.Location = new System.Drawing.Point(108, 19);
-            this.recordIdAndPrimaryRadioButton.Name = "recordIdAndPrimaryRadioButton";
-            this.recordIdAndPrimaryRadioButton.Size = new System.Drawing.Size(171, 17);
-            this.recordIdAndPrimaryRadioButton.TabIndex = 1;
-            this.recordIdAndPrimaryRadioButton.Text = "Record Id and Primary attribute";
-            this.recordIdAndPrimaryRadioButton.UseVisualStyleBackColor = true;
-            // 
-            // primaryAttribute
-            // 
-            this.primaryAttribute.Text = "Primary Attribute";
-            this.primaryAttribute.Width = 160;
             // 
             // BulkDataFinderControl
             // 

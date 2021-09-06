@@ -10,11 +10,13 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using XrmToolBox.Extensibility;
 using XrmToolBox.Extensibility.Args;
 using XrmToolBox.Extensibility.Interfaces;
+using static System.Windows.Forms.ListViewItem;
 
 namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
 {
@@ -411,6 +413,12 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             }
         }
 
+        private async void RemoveNotification()
+        {
+            await Task.Delay(5000);
+            HideNotification();
+        }
+
         private void RenderResultsDetailsView(bool isFullResults)
         {
             searchResultsListView.Items.Clear();
@@ -613,6 +621,25 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
                     };
                 }
             });
+        }
+
+        private void searchResultsListView_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (sender != searchResultsListView) return;
+
+            if (e.Control && e.KeyCode == Keys.C)
+            {
+                var builder = new StringBuilder();
+                foreach (ListViewItem item in searchResultsListView.SelectedItems)
+                {
+                    foreach (ListViewSubItem subItem in item.SubItems)
+                        builder.AppendLine(subItem.Text);
+                }
+
+                Clipboard.SetText(builder.ToString());
+                ShowInfoNotification($"Row copied to the clipboard!", null, 20);
+                RemoveNotification();
+            }
         }
 
         private void stopSearchToolStripButton_Click(object sender, EventArgs e)

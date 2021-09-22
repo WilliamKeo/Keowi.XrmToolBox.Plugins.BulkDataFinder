@@ -215,6 +215,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppCode\ColumnsOption.cs" />
     <Compile Include="AppCode\ComboBoxItem.cs" />
     <Compile Include="AppCode\MetadataManager.cs" />
     <Compile Include="AppCode\ScintillaControl.cs" />
@@ -243,6 +244,7 @@
   <ItemGroup>
     <EmbeddedResource Include="BulkDataFinderControl.resx">
       <DependentUpon>BulkDataFinderControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

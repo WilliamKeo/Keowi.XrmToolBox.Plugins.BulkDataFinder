@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Microsoft.Xrm.Sdk;
+using System;
 
 namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
 {
     public class Search
     {
+        public AttributeCollection Attributes { get; set; }
         public string InputData { get; set; }
         public bool IsFound { get; set; }
         public bool IsProcessed { get; set; }

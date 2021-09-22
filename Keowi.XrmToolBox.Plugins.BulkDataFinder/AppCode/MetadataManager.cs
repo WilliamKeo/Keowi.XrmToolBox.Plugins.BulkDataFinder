@@ -31,7 +31,7 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder.AppCode
             return filteredEntities;
         }
 
-        public Tuple<string, List<string>> GetEntityPrimaryAndTextAttributes(string entityLogicalName)
+        public Tuple<string, List<string>, List<AttributeMetadata>> GetEntityPrimaryAndTextAttributes(string entityLogicalName)
         {
             var request = new RetrieveEntityRequest
             {
@@ -44,13 +44,15 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder.AppCode
             //Remove internal attributes.
             var filteredAttributes = result.EntityMetadata.Attributes.Where(a =>
                 a.AttributeOf == null);
+            var attributesMetadata = filteredAttributes;
             //Remove non string attributes.
             filteredAttributes = filteredAttributes.Where(a =>
                 a.AttributeType == AttributeTypeCode.String || a.AttributeType == AttributeTypeCode.Memo);
 
-            return new Tuple<string, List<string>>(
+            return new Tuple<string, List<string>, List<AttributeMetadata>>(
                 result.EntityMetadata.PrimaryNameAttribute,
-                filteredAttributes.Select(x => x.LogicalName).OrderBy(x => x).ToList());
+                filteredAttributes.Select(x => x.LogicalName).OrderBy(x => x).ToList(),
+                attributesMetadata.ToList());
         }
 
         public EntityCollection GetSavedQueries(int entityCode)

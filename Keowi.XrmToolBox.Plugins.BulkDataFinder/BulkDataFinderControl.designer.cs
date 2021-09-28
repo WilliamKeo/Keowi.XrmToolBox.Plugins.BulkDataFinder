@@ -39,6 +39,7 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.exportResultsToolStripSplitButton = new System.Windows.Forms.ToolStripSplitButton();
             this.exportOnlyMatchingDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportNonMatchingDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripLabelDocumentationLink = new System.Windows.Forms.ToolStripLabel();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -72,10 +73,11 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             this.scintillaFetchXml = new ScintillaNET.Scintilla();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.viewAttributesRadioButton = new System.Windows.Forms.RadioButton();
             this.recordIdAndPrimaryRadioButton = new System.Windows.Forms.RadioButton();
             this.recordIdRadioButton = new System.Windows.Forms.RadioButton();
-            this.label4 = new System.Windows.Forms.Label();
+            this.preserveInputFileDataCheckBox = new System.Windows.Forms.CheckBox();
             this.toolStripMenu.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -152,7 +154,8 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             // exportResultsToolStripSplitButton
             // 
             this.exportResultsToolStripSplitButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.exportOnlyMatchingDataToolStripMenuItem});
+            this.exportOnlyMatchingDataToolStripMenuItem,
+            this.exportNonMatchingDataToolStripMenuItem});
             this.exportResultsToolStripSplitButton.Enabled = false;
             this.exportResultsToolStripSplitButton.Image = ((System.Drawing.Image)(resources.GetObject("exportResultsToolStripSplitButton.Image")));
             this.exportResultsToolStripSplitButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
@@ -172,6 +175,16 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             this.exportOnlyMatchingDataToolStripMenuItem.Size = new System.Drawing.Size(271, 26);
             this.exportOnlyMatchingDataToolStripMenuItem.Text = "Export Only Matching Data";
             this.exportOnlyMatchingDataToolStripMenuItem.Click += new System.EventHandler(this.exportOnlyMatchingDataToolStripMenuItem_Click);
+            // 
+            // exportNonMatchingDataToolStripMenuItem
+            // 
+            this.exportNonMatchingDataToolStripMenuItem.Enabled = false;
+            this.exportNonMatchingDataToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("exportNonMatchingDataToolStripMenuItem.Image")));
+            this.exportNonMatchingDataToolStripMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.exportNonMatchingDataToolStripMenuItem.Name = "exportNonMatchingDataToolStripMenuItem";
+            this.exportNonMatchingDataToolStripMenuItem.Size = new System.Drawing.Size(271, 26);
+            this.exportNonMatchingDataToolStripMenuItem.Text = "Export Non Matching Data";
+            this.exportNonMatchingDataToolStripMenuItem.Click += new System.EventHandler(this.exportNonMatchingDataToolStripMenuItem_Click);
             // 
             // toolStripSeparator3
             // 
@@ -220,7 +233,7 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             // openFileButton
             // 
             this.openFileButton.Image = ((System.Drawing.Image)(resources.GetObject("openFileButton.Image")));
-            this.openFileButton.ImageAlign = System.Drawing.ContentAlignment.TopLeft;
+            this.openFileButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.openFileButton.Location = new System.Drawing.Point(27, 25);
             this.openFileButton.Margin = new System.Windows.Forms.Padding(4);
             this.openFileButton.Name = "openFileButton";
@@ -543,6 +556,7 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             // 
             // groupBox5
             // 
+            this.groupBox5.Controls.Add(this.preserveInputFileDataCheckBox);
             this.groupBox5.Controls.Add(this.label4);
             this.groupBox5.Controls.Add(this.viewAttributesRadioButton);
             this.groupBox5.Controls.Add(this.recordIdAndPrimaryRadioButton);
@@ -557,10 +571,20 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Results Options";
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.Location = new System.Drawing.Point(24, 88);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(409, 17);
+            this.label4.TabIndex = 6;
+            this.label4.Text = "* attributes from related entities are not included into the search";
+            // 
             // viewAttributesRadioButton
             // 
             this.viewAttributesRadioButton.AutoSize = true;
-            this.viewAttributesRadioButton.Location = new System.Drawing.Point(377, 22);
+            this.viewAttributesRadioButton.Location = new System.Drawing.Point(394, 22);
             this.viewAttributesRadioButton.Name = "viewAttributesRadioButton";
             this.viewAttributesRadioButton.Size = new System.Drawing.Size(136, 21);
             this.viewAttributesRadioButton.TabIndex = 5;
@@ -571,7 +595,7 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             // recordIdAndPrimaryRadioButton
             // 
             this.recordIdAndPrimaryRadioButton.AutoSize = true;
-            this.recordIdAndPrimaryRadioButton.Location = new System.Drawing.Point(144, 23);
+            this.recordIdAndPrimaryRadioButton.Location = new System.Drawing.Point(161, 23);
             this.recordIdAndPrimaryRadioButton.Margin = new System.Windows.Forms.Padding(4);
             this.recordIdAndPrimaryRadioButton.Name = "recordIdAndPrimaryRadioButton";
             this.recordIdAndPrimaryRadioButton.Size = new System.Drawing.Size(226, 21);
@@ -583,7 +607,7 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             // 
             this.recordIdRadioButton.AutoSize = true;
             this.recordIdRadioButton.Checked = true;
-            this.recordIdRadioButton.Location = new System.Drawing.Point(8, 23);
+            this.recordIdRadioButton.Location = new System.Drawing.Point(25, 23);
             this.recordIdRadioButton.Margin = new System.Windows.Forms.Padding(4);
             this.recordIdRadioButton.Name = "recordIdRadioButton";
             this.recordIdRadioButton.Size = new System.Drawing.Size(120, 21);
@@ -592,15 +616,15 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             this.recordIdRadioButton.Text = "Record Id only";
             this.recordIdRadioButton.UseVisualStyleBackColor = true;
             // 
-            // label4
+            // preserveInputFileDataCheckBox
             // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(7, 88);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(409, 17);
-            this.label4.TabIndex = 6;
-            this.label4.Text = "* attributes from related entities are not included into the search";
+            this.preserveInputFileDataCheckBox.AutoSize = true;
+            this.preserveInputFileDataCheckBox.Location = new System.Drawing.Point(25, 51);
+            this.preserveInputFileDataCheckBox.Name = "preserveInputFileDataCheckBox";
+            this.preserveInputFileDataCheckBox.Size = new System.Drawing.Size(449, 21);
+            this.preserveInputFileDataCheckBox.TabIndex = 7;
+            this.preserveInputFileDataCheckBox.Text = "Preserve input file format with multiple columns data as final output";
+            this.preserveInputFileDataCheckBox.UseVisualStyleBackColor = true;
             // 
             // BulkDataFinderControl
             // 
@@ -684,5 +708,7 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
         private System.Windows.Forms.ColumnHeader primaryAttribute;
         private System.Windows.Forms.RadioButton viewAttributesRadioButton;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.ToolStripMenuItem exportNonMatchingDataToolStripMenuItem;
+        private System.Windows.Forms.CheckBox preserveInputFileDataCheckBox;
     }
 }

@@ -90,5 +90,54 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder.AppCode
                 }
             });
         }
+
+        public OptionMetadata[] GetOptionSetMetadata(string entityName, string attributeName)
+        {
+            var retrieveAttributeRequest = new RetrieveAttributeRequest
+            {
+                EntityLogicalName = entityName,
+                LogicalName = attributeName,
+                RetrieveAsIfPublished = true
+            };
+
+            var retrieveAttributeResponse = (RetrieveAttributeResponse)Service.Execute(retrieveAttributeRequest);
+            var retrievedPicklistAttributeMetadata =
+                (PicklistAttributeMetadata)retrieveAttributeResponse.AttributeMetadata;
+            OptionMetadata[] optionList = retrievedPicklistAttributeMetadata.OptionSet.Options.ToArray();
+
+            return optionList;
+        }
+
+        public OptionMetadata[] GetMultiSelectOptionSetMetadata(string entityName, string attributeName)
+        {
+            var retrieveAttributeRequest = new RetrieveAttributeRequest
+            {
+                EntityLogicalName = entityName,
+                LogicalName = attributeName,
+                RetrieveAsIfPublished = true
+            };
+
+            var retrieveAttributeResponse = (RetrieveAttributeResponse)Service.Execute(retrieveAttributeRequest);
+            var retrievedMultiSelectPicklistAttributeMetadata =
+                (MultiSelectPicklistAttributeMetadata)retrieveAttributeResponse.AttributeMetadata;
+            OptionMetadata[] optionList = retrievedMultiSelectPicklistAttributeMetadata.OptionSet.Options.ToArray();
+
+            return optionList;
+        }
+
+        public string GetOptionSetText(OptionMetadata[] optionSet, int optionSetValue)
+        {
+            if (optionSet.Length > 0)
+            {
+                foreach (OptionMetadata optionMetadata in optionSet)
+                {
+                    if (optionMetadata.Value == optionSetValue)
+                    {
+                        return optionMetadata.Label.UserLocalizedLabel.Label;
+                    }
+                }
+            }
+            return null;
+        }
     }
 }

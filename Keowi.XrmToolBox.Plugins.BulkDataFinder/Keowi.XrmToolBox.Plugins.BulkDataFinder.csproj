@@ -215,6 +215,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppCode\ExportOption.cs" />
     <Compile Include="AppCode\ColumnsOption.cs" />
     <Compile Include="AppCode\ComboBoxItem.cs" />
     <Compile Include="AppCode\MetadataManager.cs" />

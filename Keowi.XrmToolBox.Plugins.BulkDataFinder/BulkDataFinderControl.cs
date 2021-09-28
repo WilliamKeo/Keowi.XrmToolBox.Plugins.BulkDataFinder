@@ -5,6 +5,7 @@ using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Metadata;
 using Microsoft.Xrm.Sdk.Query;
 using OfficeOpenXml;
+using OfficeOpenXml.Style;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -33,6 +34,8 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
         private bool IsStopRequested;
         private MetadataManager metadataManager = null;
         private Settings mySettings;
+        private Dictionary<string, OptionMetadata[]> OptionSetsMetadata;
+        private ExcelWorksheet OriginalWorksheet;
         private List<Search> searchingDataList;
         private SearchResultsOptions SearchResultsOptions;
 
@@ -84,11 +87,13 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             recordIdRadioButton.Enabled = enable;
             recordIdAndPrimaryRadioButton.Enabled = enable;
             viewAttributesRadioButton.Enabled = enable;
+            preserveInputFileDataCheckBox.Enabled = enable;
             searchButton.Enabled = enable;
             tsbLoadMetadata.Enabled = enable;
             resultsDetailsGroupBox.Enabled = enable;
             exportResultsToolStripSplitButton.Enabled = enable;
             exportOnlyMatchingDataToolStripMenuItem.Enabled = enable;
+            exportNonMatchingDataToolStripMenuItem.Enabled = enable;
         }
 
         private void entitiesComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -126,13 +131,25 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             });
         }
 
-        private void exportOnlyMatchingDataToolStripMenuItem_Click(object sender, EventArgs e)
+        private void exportResultsToolStripSplitButton_ButtonClick(object sender, EventArgs e)
         {
-            ExecuteMethod(ExportResults, false);
+            ExecuteMethod(ExportResults, ExportOption.FullResults);
         }
 
-        private void ExportResults(bool isFullResults)
+        private void exportOnlyMatchingDataToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            ExecuteMethod(ExportResults, ExportOption.OnlyMatching);
+        }
+
+        private void exportNonMatchingDataToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ExecuteMethod(ExportResults, ExportOption.OnlyNonMatching);
+        }
+
+        private void ExportResults(ExportOption exportOption)
+        {
+            SearchResultsOptions.PreserveInputFileData = preserveInputFileDataCheckBox.Checked;
+
             WorkAsync(new WorkAsyncInfo
             {
                 Message = "Exporting search results...",
@@ -140,20 +157,39 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
                 Work = (worker, args) =>
                 {
                     var criterias = (SearchResultsOptions)args.Argument;
+                    var hasHeader = ignoreHeaderCheckBox.Checked;
 
                     ExcelPackage excelPkg = new ExcelPackage();
-                    ExcelWorksheet worksheet = excelPkg.Workbook.Worksheets.Add("Search Results");
+                    ExcelWorksheet worksheet = criterias.PreserveInputFileData ? 
+                        excelPkg.Workbook.Worksheets.Add($"Search Results {criterias.Attribute} ({criterias.Entity})", OriginalWorksheet) : 
+                        excelPkg.Workbook.Worksheets.Add($"Search Results {criterias.Attribute} ({criterias.Entity})");
 
-                    // File Header.
-                    worksheet.Cells[1, 1].Value = $"{criterias.Attribute} ({criterias.Entity})";
-                    worksheet.Cells[1, 1].Style.Font.Bold = true;
-                    worksheet.Cells[1, 2].Value = "Processed";
-                    worksheet.Cells[1, 2].Style.Font.Bold = true;
-                    worksheet.Cells[1, 3].Value = "Found";
-                    worksheet.Cells[1, 3].Style.Font.Bold = true;
-                    worksheet.Cells[1, 4].Value = "Record Id";
-                    worksheet.Cells[1, 4].Style.Font.Bold = true;
-                    var headerColIndex = 5;
+                    #region File Header
+                    var headerColIndex = criterias.PreserveInputFileData ? OriginalWorksheet.Dimension.End.Column + 1 : 1;
+
+                    if (criterias.PreserveInputFileData && !hasHeader)
+                    {
+                        worksheet.InsertRow(1, 1);
+                        worksheet.Cells[1, 1].Value = $"{criterias.Attribute} ({criterias.Entity})";
+                        worksheet.Cells[1, 1].Style.Font.Bold = true;
+                    }
+
+                    if (!criterias.PreserveInputFileData)
+                    {
+                        worksheet.Cells[1, headerColIndex].Value = $"{criterias.Attribute} ({criterias.Entity})";
+                        worksheet.Cells[1, headerColIndex].Style.Font.Bold = true;
+                        headerColIndex++;
+                    }
+                    worksheet.Cells[1, headerColIndex].Value = "Processed";
+                    worksheet.Cells[1, headerColIndex].Style.Font.Bold = true;
+                    headerColIndex++;
+                    worksheet.Cells[1, headerColIndex].Value = "Found";
+                    worksheet.Cells[1, headerColIndex].Style.Font.Bold = true;
+                    headerColIndex++;
+                    worksheet.Cells[1, headerColIndex].Value = "Record Id";
+                    worksheet.Cells[1, headerColIndex].Style.Font.Bold = true;
+                    headerColIndex++;
+
                     if (criterias.DisplayPrimaryAttribute)
                     {
                         worksheet.Cells[1, headerColIndex].Value = $"Primary attribute ({criterias.PrimaryAttribute})";
@@ -167,28 +203,42 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
                         worksheet.Cells[1, headerColIndex].Style.Font.Bold = true;
                         headerColIndex++;
                     }
+                    #endregion File Header
 
-
+                    #region File Body
                     var lineIndex = 2;
 
                     //Filtering output results.
                     var searchingDataOutput = searchingDataList;
-                    if (!isFullResults)
+                    if (exportOption == ExportOption.OnlyMatching)
                     {
                         searchingDataOutput = searchingDataOutput.Where(x => x.IsFound).ToList();
+                    }
+                    else if (exportOption == ExportOption.OnlyNonMatching)
+                    {
+                        searchingDataOutput = searchingDataOutput.Where(x => !x.IsFound).ToList();
                     }
 
                     // File content.
                     foreach (var searchItemResult in searchingDataOutput)
                     {
-                        worksheet.Cells[lineIndex, 1].Value = searchItemResult.InputData;
-                        worksheet.Cells[lineIndex, 2].Value = searchItemResult.IsProcessed;
-                        worksheet.Cells[lineIndex, 3].Value = searchItemResult.IsFound;
+                        var colIndex = criterias.PreserveInputFileData ? OriginalWorksheet.Dimension.End.Column + 1 : 1;
+
+                        if (!criterias.PreserveInputFileData)
+                        {
+                            worksheet.Cells[lineIndex, colIndex].Value = searchItemResult.InputData;
+                            colIndex++;
+                        }
+                        worksheet.Cells[lineIndex, colIndex].Value = searchItemResult.IsProcessed;
+                        colIndex++;
+                        worksheet.Cells[lineIndex, colIndex].Value = searchItemResult.IsFound;
+                        colIndex++;
                         if (searchItemResult.IsFound)
                         {
-                            worksheet.Cells[lineIndex, 4].Value = searchItemResult.RecordId;
+                            worksheet.Cells[lineIndex, colIndex].Value = searchItemResult.RecordId;
                         }
-                        var colIndex = 5;
+                        colIndex++;
+
                         if (criterias.DisplayPrimaryAttribute)
                         {
                             worksheet.Cells[lineIndex, colIndex].Value = searchItemResult.PrimaryAttribute;
@@ -205,8 +255,15 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
                             colIndex++;
                         }
 
+                        if (searchItemResult.HasDuplicates)
+                        {
+                            worksheet.Row(lineIndex).Style.Fill.PatternType = ExcelFillStyle.Solid;
+                            worksheet.Row(lineIndex).Style.Fill.BackgroundColor.SetColor(Color.Orange);
+                        }
+
                         lineIndex++;
                     }
+                    #endregion File Body
 
                     worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
 
@@ -233,20 +290,12 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
                         }
                     }
 
-                    ShowInfoNotification($"The results has been saved to '{saveFileDialog.FileName}'", null, 20);
+                    ShowInfoNotification($"The results have been saved to '{saveFileDialog.FileName}'", null, 20);
                 }
             });
         }
 
-        private void exportResultsToolStripButton_Click(object sender, EventArgs e)
-        {
-            ExecuteMethod(ExportResults, false);
-        }
-
-        private void exportResultsToolStripSplitButton_ButtonClick(object sender, EventArgs e)
-        {
-            ExecuteMethod(ExportResults, true);
-        }
+        
 
         private void GetEntitiesMetadata()
         {
@@ -333,8 +382,11 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
 
         private void ignoreHeaderCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            var curSearchingDataList = searchingDataList.Skip(ignoreHeaderCheckBox.Checked ? 1 : 0).ToList();
-            rowNumberValue.Text = $"{curSearchingDataList.Count}";
+            if (searchingDataList != null)
+            {
+                var curSearchingDataList = searchingDataList.Skip(ignoreHeaderCheckBox.Checked ? 1 : 0).ToList();
+                rowNumberValue.Text = $"{curSearchingDataList.Count}";
+            }
         }
 
         private void matchingResultsRadioButton_CheckedChanged(object sender, EventArgs e)
@@ -386,7 +438,7 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
         {
             HideNotification();
 
-            //var fileContent = string.Empty;
+            var hasMultipleColumns = false;
             var filePath = string.Empty;
 
             searchingDataList = new List<Search>();
@@ -415,6 +467,7 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
                     ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
                     var pck = new ExcelPackage(openFileDialog.OpenFile());
                     var worksheet = pck.Workbook.Worksheets[0];
+                    OriginalWorksheet = worksheet;
 
                     for (var i = 1; i <= worksheet.Dimension.End.Row; i++)
                     {
@@ -427,18 +480,31 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
                             });
                         }
                     }
+
+                    hasMultipleColumns = worksheet.Dimension.End.Column > 1;
                 }
             }
 
+            var messages = new List<string>();
+            
             var curSearchingDataList = searchingDataList.Skip(ignoreHeaderCheckBox.Checked ? 1 : 0).ToList();
-            ShowInfoNotification($"{curSearchingDataList.Count} rows has been identified.", null, 20);
+            ShowInfoNotification($"{curSearchingDataList.Count} rows have been identified.", null, 20);
             rowNumberValue.Text = $"{curSearchingDataList.Count}";
 
             HasInputData = true;
 
+            if (hasMultipleColumns)
+            {
+                messages.Add("The selected file contains more than one column. Other columns will not be used for the search.");
+            }
             if (curSearchingDataList.Count > WarningLimit)
             {
-                ShowWarningNotification("Your file contains more than 100000 rows, you might notice some delays during the search.", null, 20);
+                messages.Add("Your file contains more than 100000 rows, you might notice some delays during the search.");
+            }
+
+            if (messages.Any())
+            {
+                ShowWarningNotification(string.Join(Environment.NewLine, messages), null, 20);
             }
         }
 
@@ -486,6 +552,7 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
                 searchingDataOutput = searchingDataOutput.Where(x => x.IsFound).ToList();
             }
 
+            OptionSetsMetadata = new Dictionary<string, OptionMetadata[]>();
             foreach (var searchItemResult in searchingDataOutput)
             {
                 var values = new List<string>();
@@ -510,6 +577,8 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
                     listItem.ForeColor = Color.Green;
                 if (isFullResults && !searchItemResult.IsProcessed)
                     listItem.BackColor = Color.LightGray;
+                if (searchItemResult.HasDuplicates)
+                    listItem.BackColor = Color.Orange;
                 searchResultsListView.Items.Add(listItem);
             }
         }
@@ -550,7 +619,13 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
                         case AttributeTypeCode.Picklist:
                         case AttributeTypeCode.Status:
                         case AttributeTypeCode.State:
-                            strValue = ((OptionSetValue)searchItemResult.Attributes[colName]).Value.ToString(); //TODO
+                            if (!OptionSetsMetadata.ContainsKey(colName))
+                            {
+                                var optionSet = metadataManager.GetOptionSetMetadata(CurrentSearchCriterias.Entity, colName);
+                                OptionSetsMetadata.Add(colName, optionSet);
+                            }
+                            var currentOptionSet = OptionSetsMetadata.First(o => o.Key == colName).Value;
+                            strValue = metadataManager.GetOptionSetText(currentOptionSet, ((OptionSetValue)searchItemResult.Attributes[colName]).Value);
                             break;
                         case AttributeTypeCode.Uniqueidentifier:
                             strValue = ((Guid)searchItemResult.Attributes[colName]).ToString();
@@ -558,6 +633,20 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
                         case AttributeTypeCode.Memo:
                         case AttributeTypeCode.String:
                             strValue = searchItemResult.Attributes[colName].ToString();
+                            break;
+                        case AttributeTypeCode.Virtual: //MultiSelectPickList
+                            if (!OptionSetsMetadata.ContainsKey(colName))
+                            {
+                                var optionSet = metadataManager.GetMultiSelectOptionSetMetadata(CurrentSearchCriterias.Entity, colName);
+                                OptionSetsMetadata.Add(colName, optionSet);
+                            }
+                            var currentMultiOptionSet = OptionSetsMetadata.First(o => o.Key == colName).Value;
+                            var multiSelectValue = new List<string>();
+                            foreach (var pickListValue in (OptionSetValueCollection)searchItemResult.Attributes[colName])
+                            {
+                                multiSelectValue.Add(metadataManager.GetOptionSetText(currentMultiOptionSet, pickListValue.Value));
+                            }
+                            strValue = string.Join(";", multiSelectValue);
                             break;
                     }
                 }
@@ -592,7 +681,6 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
                 return;
             }
             CurrentSearchCriterias.IgnoreHeader = ignoreHeaderCheckBox.Checked;
-            CurrentSearchCriterias.Columns = null;
             CurrentSearchCriterias.ColumnsOption = GetColumnsOption();
             if (HasSearchResults
                 && MessageBox.Show("Starting a new search will delete previous results. Do you want to continue?",
@@ -600,6 +688,7 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
             {
                 return;
             }
+            CurrentSearchCriterias.Columns = null;
 
             //Reset previous search results.
             HasSearchResults = false;
@@ -612,6 +701,7 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
                 x.IsFound = false;
                 x.RecordId = Guid.Empty;
                 x.PrimaryAttribute = string.Empty;
+                x.HasDuplicates = false;
             });
             searchResultsListView.Items.Clear();
 
@@ -703,6 +793,11 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
                                 searchItem.PrimaryAttribute = result.First().GetAttributeValue<string>(criterias.PrimaryAttribute);
                             }
                             searchItem.Attributes = recordResult.Attributes;
+
+                            if (result.Count > 1)
+                            {
+                                searchItem.HasDuplicates = true;
+                            }
                         }
                         searchItem.IsProcessed = true;
 
@@ -748,6 +843,7 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
 
                     SendMessageToStatusBar?.Invoke(this, new StatusBarMessageEventArgs(100, string.Empty));
 
+                    allResultsRadioButton.Checked = true;
                     RenderResultsDetailsView(true);
 
                     SearchResultsOptions = new SearchResultsOptions

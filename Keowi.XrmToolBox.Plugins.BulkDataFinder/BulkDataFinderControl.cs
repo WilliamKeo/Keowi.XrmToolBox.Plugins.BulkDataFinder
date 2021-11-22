@@ -443,68 +443,76 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
 
             searchingDataList = new List<Search>();
 
-            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            try
             {
-                //openFileDialog.InitialDirectory = "c:\\";
-                openFileDialog.Filter = "Excel files (*.xls;*.xlsx)|*.xls;*.xlsx";
-                //openFileDialog.Filter = "Excel files (*.xls;*.xlsx)|*.xls;*.xlsx|Text files (*.txt)|*.txt|All files (*.*)|*.*";
-                openFileDialog.FilterIndex = 1;
-                openFileDialog.RestoreDirectory = true;
-
-                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                using (OpenFileDialog openFileDialog = new OpenFileDialog())
                 {
-                    //Get the path of specified file
-                    filePath = openFileDialog.FileName;
+                    //openFileDialog.InitialDirectory = "c:\\";
+                    openFileDialog.Filter = "Excel files (*.xls;*.xlsx)|*.xls;*.xlsx";
+                    //openFileDialog.Filter = "Excel files (*.xls;*.xlsx)|*.xls;*.xlsx|Text files (*.txt)|*.txt|All files (*.*)|*.*";
+                    openFileDialog.FilterIndex = 1;
+                    openFileDialog.RestoreDirectory = true;
 
-                    //Read the contents of the file into a stream
-                    //var fileStream = openFileDialog.OpenFile();
-
-                    //using (StreamReader reader = new StreamReader(fileStream))
-                    //{
-                    //    fileContent = reader.ReadToEnd();
-                    //}
-
-                    ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-                    var pck = new ExcelPackage(openFileDialog.OpenFile());
-                    var worksheet = pck.Workbook.Worksheets[0];
-                    OriginalWorksheet = worksheet;
-
-                    for (var i = 1; i <= worksheet.Dimension.End.Row; i++)
+                    if (openFileDialog.ShowDialog() == DialogResult.OK)
                     {
-                        var value = worksheet.Cells[i, 1].Value.ToString();
-                        if (!string.IsNullOrEmpty(value))
-                        {
-                            searchingDataList.Add(new Search
-                            {
-                                InputData = value
-                            });
-                        }
-                    }
+                        //Get the path of specified file
+                        filePath = openFileDialog.FileName;
 
-                    hasMultipleColumns = worksheet.Dimension.End.Column > 1;
+                        //Read the contents of the file into a stream
+                        //var fileStream = openFileDialog.OpenFile();
+
+                        //using (StreamReader reader = new StreamReader(fileStream))
+                        //{
+                        //    fileContent = reader.ReadToEnd();
+                        //}
+
+                        ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                        var pck = new ExcelPackage(openFileDialog.OpenFile());
+                        var worksheet = pck.Workbook.Worksheets[0];
+                        OriginalWorksheet = worksheet;
+
+                        for (var i = 1; i <= worksheet.Dimension.End.Row; i++)
+                        {
+                            var value = worksheet.Cells[i, 1].Value.ToString();
+                            if (!string.IsNullOrEmpty(value))
+                            {
+                                searchingDataList.Add(new Search
+                                {
+                                    InputData = value
+                                });
+                            }
+                        }
+
+                        hasMultipleColumns = worksheet.Dimension.End.Column > 1;
+                    }
+                }
+
+                var messages = new List<string>();
+
+                var curSearchingDataList = searchingDataList.Skip(ignoreHeaderCheckBox.Checked ? 1 : 0).ToList();
+                ShowInfoNotification($"{curSearchingDataList.Count} rows have been identified.", null, 20);
+                rowNumberValue.Text = $"{curSearchingDataList.Count}";
+
+                HasInputData = true;
+
+                if (hasMultipleColumns)
+                {
+                    messages.Add("The selected file contains more than one column. Other columns will not be used for the search.");
+                }
+                if (curSearchingDataList.Count > WarningLimit)
+                {
+                    messages.Add("Your file contains more than 100000 rows, you might notice some delays during the search.");
+                }
+
+                if (messages.Any())
+                {
+                    ShowWarningNotification(string.Join(Environment.NewLine, messages), null, 20);
                 }
             }
-
-            var messages = new List<string>();
-            
-            var curSearchingDataList = searchingDataList.Skip(ignoreHeaderCheckBox.Checked ? 1 : 0).ToList();
-            ShowInfoNotification($"{curSearchingDataList.Count} rows have been identified.", null, 20);
-            rowNumberValue.Text = $"{curSearchingDataList.Count}";
-
-            HasInputData = true;
-
-            if (hasMultipleColumns)
+            catch
             {
-                messages.Add("The selected file contains more than one column. Other columns will not be used for the search.");
-            }
-            if (curSearchingDataList.Count > WarningLimit)
-            {
-                messages.Add("Your file contains more than 100000 rows, you might notice some delays during the search.");
-            }
-
-            if (messages.Any())
-            {
-                ShowWarningNotification(string.Join(Environment.NewLine, messages), null, 20);
+                MessageBox.Show($"An error has occured while loading file. Ensure your file is not already opened and try again.",
+                    "Loading file error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -534,16 +542,19 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
                 Width = 220
             });
             var index = 2;
-            foreach (var colName in CurrentSearchCriterias.Columns)
+            if (CurrentSearchCriterias.Columns != null)
             {
-                searchResultsListView.Columns.Add(new ColumnHeader
+                foreach (var colName in CurrentSearchCriterias.Columns)
                 {
-                    DisplayIndex = index,
-                    Name = colName,
-                    Text = colName,
-                    Width = 200
-                });
-                index++;
+                    searchResultsListView.Columns.Add(new ColumnHeader
+                    {
+                        DisplayIndex = index,
+                        Name = colName,
+                        Text = colName,
+                        Width = 200
+                    });
+                    index++;
+                }
             }
 
             var searchingDataOutput = searchingDataList.Skip(ignoreHeaderCheckBox.Checked ? 1 : 0).ToList();
@@ -558,17 +569,20 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
                 var values = new List<string>();
                 values.Add(searchItemResult.InputData);
                 values.Add(searchItemResult.RecordId != Guid.Empty ? searchItemResult.RecordId.ToString() : string.Empty);
-                
-                foreach (var colName in CurrentSearchCriterias.Columns)
+
+                if (CurrentSearchCriterias.Columns != null)
                 {
-                    if (searchItemResult.Attributes != null)
+                    foreach (var colName in CurrentSearchCriterias.Columns)
                     {
-                        var strValue = GetAttributeValue(searchItemResult, colName);
-                        values.Add(strValue);
-                    }
-                    else
-                    {
-                        values.Add(string.Empty);
+                        if (searchItemResult.Attributes != null)
+                        {
+                            var strValue = GetAttributeValue(searchItemResult, colName);
+                            values.Add(strValue);
+                        }
+                        else
+                        {
+                            values.Add(string.Empty);
+                        }
                     }
                 }
                 var listItem = new ListViewItem(values.ToArray());
@@ -579,6 +593,8 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
                     listItem.BackColor = Color.LightGray;
                 if (searchItemResult.HasDuplicates)
                     listItem.BackColor = Color.Orange;
+                if (!string.IsNullOrEmpty(searchItemResult.Error))
+                    listItem.BackColor = Color.Red;
                 searchResultsListView.Items.Add(listItem);
             }
         }
@@ -702,6 +718,7 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
                 x.RecordId = Guid.Empty;
                 x.PrimaryAttribute = string.Empty;
                 x.HasDuplicates = false;
+                x.Error = string.Empty;
             });
             searchResultsListView.Items.Clear();
 
@@ -729,6 +746,18 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
                         if (IsStopRequested)
                             return;
 
+                        // Control for primary key comparison.
+                        var isPrimaryKeyComparison = false;
+                        if (criterias.Attribute == $"{criterias.Entity}id")
+                        {
+                            isPrimaryKeyComparison = true;
+                            if (!Guid.TryParse(searchItem.InputData, out var inputDataId))
+                            {
+                                searchItem.Error = $"- {searchItem.InputData} is not a valid Guid!.";
+                                return;
+                            }
+                        }
+
                         var query = new QueryExpression(criterias.Entity);
                         // Use view filter
                         if (criterias.UseFilteredView)
@@ -753,22 +782,47 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
                                 linkEntity.Columns = new ColumnSet();
                             }
 
-                            query.Criteria.AddCondition(
-                                new ConditionExpression(criterias.Attribute, ConditionOperator.Equal, searchItem.InputData));
+                            if (isPrimaryKeyComparison)
+                            {
+                                query.Criteria.AddCondition(
+                                    new ConditionExpression(criterias.Attribute, ConditionOperator.Equal, new Guid(searchItem.InputData)));
+                            }
+                            else
+                            {
+                                query.Criteria.AddCondition(
+                                    new ConditionExpression(criterias.Attribute, ConditionOperator.Equal, searchItem.InputData));
+                            }
                         }
                         else
                         {
-                            query = new QueryExpression(criterias.Entity)
+                            if (isPrimaryKeyComparison)
                             {
-                                NoLock = true,
-                                Criteria =
+                                query = new QueryExpression(criterias.Entity)
                                 {
-                                    Conditions =
+                                    NoLock = true,
+                                    Criteria =
                                     {
-                                        new ConditionExpression(criterias.Attribute, ConditionOperator.Equal, searchItem.InputData)
+                                        Conditions =
+                                        {
+                                            new ConditionExpression(criterias.Attribute, ConditionOperator.Equal, new Guid(searchItem.InputData))
+                                        }
                                     }
-                                }
-                            };
+                                };
+                            }
+                            else
+                            {
+                                query = new QueryExpression(criterias.Entity)
+                                {
+                                    NoLock = true,
+                                    Criteria =
+                                    {
+                                        Conditions =
+                                        {
+                                            new ConditionExpression(criterias.Attribute, ConditionOperator.Equal, searchItem.InputData)
+                                        }
+                                    }
+                                };
+                            }
                         }
 
                         if (criterias.ColumnsOption == ColumnsOption.IdAndPrimaryAttribute)
@@ -826,7 +880,19 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder
                     EnableControls(true);
 
                     var curSearchingDataList = searchingDataList.Skip(ignoreHeaderCheckBox.Checked ? 1 : 0).ToList();
-                    if (curSearchingDataList.All(x => x.IsProcessed))
+                    if (curSearchingDataList.Any(x => !string.IsNullOrEmpty(x.Error)))
+                    {
+                        var errorDetails = string.Join("\n", curSearchingDataList
+                            .Where(x => !string.IsNullOrEmpty(x.Error)).Select(x => x.Error).Take(10));
+                        var errorsNb = curSearchingDataList.Where(x => !string.IsNullOrEmpty(x.Error)).Count();
+                        if (errorsNb > 10)
+                        {
+                            errorDetails += $"\n- ...";
+                        }
+                        MessageBox.Show($"The following rows has encountered {errorsNb} error(s):\n\n{errorDetails}",
+                            "Search with errors", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                    else if (curSearchingDataList.All(x => x.IsProcessed))
                     {
                         MessageBox.Show("The search has completed successfully.\nPlease check the analysis results report and use the 'Export' action to download a copy.",
                             "Search completed", MessageBoxButtons.OK, MessageBoxIcon.Information);

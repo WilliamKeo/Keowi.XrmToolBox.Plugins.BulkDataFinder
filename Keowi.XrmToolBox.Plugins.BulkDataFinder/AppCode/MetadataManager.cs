@@ -45,8 +45,8 @@ namespace Keowi.XrmToolBox.Plugins.BulkDataFinder.AppCode
             var filteredAttributes = result.EntityMetadata.Attributes.Where(a =>
                 a.AttributeOf == null);
             var attributesMetadata = filteredAttributes;
-            //Remove non string attributes.
-            filteredAttributes = filteredAttributes.Where(a =>
+            //Remove non string attributes or primary key.
+            filteredAttributes = filteredAttributes.Where(a => a.AttributeType == AttributeTypeCode.Uniqueidentifier ||
                 a.AttributeType == AttributeTypeCode.String || a.AttributeType == AttributeTypeCode.Memo);
 
             return new Tuple<string, List<string>, List<AttributeMetadata>>(
